@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm install *)",
+      "WebFetch(domain:minimax-algeng-chat-tts.oss-cn-wulanchabu.aliyuncs.com)",
+      "Bash(curl -sL \"https://minimax-algeng-chat-tts.oss-cn-wulanchabu.aliyuncs.com/ccv2%2F2026-04-30%2FMiniMax-M2.1%2F2049132417762992899%2F9eeb6c13f78beffca6f6be6b4692c38bd4199d50a7a030efc58a0e4d746d8334..png?Expires=1777592645&OSSAccessKeyId=LTAI5tGLnRTkBjLuYPjNcKQ8&Signature=ja0bVcyHkk8njCV15aqO%2FrB7880%3D\" -o /c/Users/Apricity/AppData/Local/Temp/github_user.png)",
+      "Bash(git config *)",
+      "Bash(gh auth *)"
+    ]
+  }
+}
