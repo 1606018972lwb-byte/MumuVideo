@@ -154,6 +154,28 @@ export const CREDITS_CONFIG = {
       .map(([modelId, pricing]) => {
         // 模型基础配置（从 defaults.ts 获取）
         const baseConfigs: Record<string, Omit<ModelConfig, "creditCost">> = {
+          // Veo 3.1 Fast Components - Yunwu
+          "veo3.1-fast-components": {
+            id: "veo3.1-fast-components",
+            name: "Veo 3.1 Fast",
+            provider: "yunwu" as const,
+            description: "models.veo31fast.description",
+            supportImageToVideo: false,
+            maxDuration: 8,
+            durations: [5, 6, 7, 8],
+            aspectRatios: ["16:9", "9:16"],
+          },
+          // Veo 3 Fast Frames - Yunwu
+          "veo3-fast-frames": {
+            id: "veo3-fast-frames",
+            name: "Veo 3 Fast Frames",
+            provider: "yunwu" as const,
+            description: "models.veo31frames.description",
+            supportImageToVideo: true,
+            maxDuration: 8,
+            durations: [5, 6, 7, 8],
+            aspectRatios: ["16:9", "9:16"],
+          },
           "sora-2": {
             id: "sora-2",
             name: "Sora 2",

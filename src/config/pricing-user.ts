@@ -256,6 +256,20 @@ export const CREDIT_PACKAGES: CreditPackageConfig[] = [
  * - qualityMultiplier: 画质乘数（1080p vs 720p）
  */
 export const VIDEO_MODEL_PRICING: Record<string, VideoModelPricing> = {
+  /** Veo 3.1 Fast Components - Yunwu (see100.net) */
+  "veo3.1-fast-components": {
+    baseCredits: 10,
+    perSecond: 0,
+    enabled: true,
+  },
+
+  /** Veo 3 Fast Frames - Yunwu (see100.net) - Image to Video */
+  "veo3-fast-frames": {
+    baseCredits: 10,
+    perSecond: 0,
+    enabled: true,
+  },
+
   /** Seedance 1.5 Pro - 按秒计费（默认有音频） */
   "seedance-1.5-pro": {
     baseCredits: 0,
