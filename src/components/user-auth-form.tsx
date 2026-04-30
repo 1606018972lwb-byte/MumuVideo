@@ -258,7 +258,7 @@ export function UserAuthForm({
               {isLoading && (
                 <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />
               )}
-              {authMode === "password-login" ? "Sign In" : "Create Account"}
+              {authMode === "password-login" ? t("submit_signin") : t("submit_signup")}
             </button>
           </div>
         </form>
@@ -317,8 +317,8 @@ export function UserAuthForm({
           }}
         >
           {authMode === "password-login"
-            ? "Don't have an account? Sign up"
-            : "Already have an account? Sign in"}
+            ? t("switch_to_signup")
+            : t("switch_to_signin")}
         </Button>
       )}
 
@@ -342,7 +342,7 @@ export function UserAuthForm({
             onClick={() => setAuthMode("password-login")}
             disabled={isLoading}
           >
-            Sign in with Email & Password
+            {t("signin_password")}
           </button>
 
           <button
@@ -367,7 +367,7 @@ export function UserAuthForm({
             ) : (
               <Icons.Google className="mr-2 h-4 w-4" />
             )}{" "}
-            Continue with Google
+            {t("signin_google")}
           </button>
         </>
       )}
