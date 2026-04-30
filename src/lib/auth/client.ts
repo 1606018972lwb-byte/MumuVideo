@@ -3,11 +3,13 @@
 import { createAuthClient } from "better-auth/react";
 import { magicLinkClient } from "better-auth/client/plugins";
 import { creemClient } from "@creem_io/better-auth/client";
-import { emailPasswordClient } from "better-auth/client/plugins";
+
+// Note: Better Auth v1.4.17 does not have a separate emailPasswordClient plugin
+// Email/password is handled internally by createAuthClient
 
 export const authClient = createAuthClient({
   baseURL: process.env.NEXT_PUBLIC_APP_URL,
-  plugins: [magicLinkClient(), creemClient(), emailPasswordClient()],
+  plugins: [magicLinkClient(), creemClient()],
 });
 
 // Export commonly used methods
