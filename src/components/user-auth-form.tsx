@@ -12,6 +12,7 @@ import { cn } from "@/components/ui";
 import { Button, buttonVariants } from "@/components/ui/button";
 import * as Icons from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
@@ -100,15 +101,32 @@ export function UserAuthForm({
     setIsLoading(true);
 
     try {
-      // @ts-expect-error - better-auth includes emailPassword by default
-      const result = await authClient.signIn.emailPassword({
-        email: data.email.toLowerCase(),
-        password: data.password,
+      const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/auth/sign-in/email`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: data.email.toLowerCase(),
+          password: data.password,
+        }),
       });
 
-      if (result.error) {
+      let result = {};
+      try {
+        result = await response.json();
+      } catch {
+        // Empty or invalid JSON response
+        if (!response.ok) {
+          toast.error("Login failed", {
+            description: "Database connection error. Please try again later.",
+          });
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      if (!response.ok || result.error) {
         toast.error("Login failed", {
-          description: result.error.message || "Invalid email or password",
+          description: result.error?.message || "Invalid email or password",
         });
       } else {
         window.location.href = searchParams?.get("from") ?? `/${lang}/my-creations`;
@@ -128,16 +146,33 @@ export function UserAuthForm({
     setIsLoading(true);
 
     try {
-      // @ts-expect-error - better-auth includes emailPassword by default
-      const result = await authClient.signUp.emailPassword({
-        email: data.email.toLowerCase(),
-        password: data.password,
-        name: data.name,
+      const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/auth/sign-up/email`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: data.name,
+          email: data.email.toLowerCase(),
+          password: data.password,
+        }),
       });
 
-      if (result.error) {
+      let result = {};
+      try {
+        result = await response.json();
+      } catch {
+        // Empty or invalid JSON response
+        if (!response.ok) {
+          toast.error("Registration failed", {
+            description: "Database connection error. Please try again later.",
+          });
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      if (!response.ok || result.error) {
         toast.error("Registration failed", {
-          description: result.error.message || "Could not create account",
+          description: result.error?.message || "Could not create account",
         });
       } else {
         toast.success("Account created", {
@@ -211,9 +246,8 @@ export function UserAuthForm({
             </div>
             <div className="grid gap-1">
               <Label htmlFor="password">Password</Label>
-              <Input
+              <PasswordInput
                 id="password"
-                type="password"
                 placeholder="Your password"
                 autoCapitalize="none"
                 autoComplete={authMode === "password-login" ? "current-password" : "new-password"}
@@ -236,9 +270,8 @@ export function UserAuthForm({
             {authMode === "password-register" && (
               <div className="grid gap-1">
                 <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <Input
+                <PasswordInput
                   id="confirmPassword"
-                  type="password"
                   placeholder="Confirm your password"
                   autoCapitalize="none"
                   autoComplete="new-password"

@@ -19,8 +19,17 @@ const parseSslConfig = (url: string) => {
     return undefined;
   }
 
+  if (mode === "prefer" || mode === "allow") {
+    return { mode: "prefer" } as const;
+  }
+
   if (mode === "require" || mode === "true" || mode === "1" || mode === "on") {
     return "require" as const;
+  }
+
+  // Check if sslmode=prefer or sslmode=allow is in the URL
+  if (url.includes("sslmode=prefer") || url.includes("sslmode=allow")) {
+    return { mode: "prefer" } as const;
   }
 
   const isLocalhost = url.includes("localhost") || url.includes("127.0.0.1");
