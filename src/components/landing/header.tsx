@@ -313,9 +313,16 @@ export function LandingHeader({ user }: { user?: User | null }) {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button variant="default" size="sm" onClick={signInModal.onOpen}>
-                {t('Common.login')}
-              </Button>
+              <div className="flex items-center gap-2">
+                <LocaleLink href="/register">
+                  <Button variant="outline" size="sm">
+                    {t('Common.register')}
+                  </Button>
+                </LocaleLink>
+                <Button variant="default" size="sm" onClick={signInModal.onOpen}>
+                  {t('Common.login')}
+                </Button>
+              </div>
             )}
           </div>
         </nav>
@@ -498,9 +505,16 @@ export function LandingHeader({ user }: { user?: User | null }) {
                       </button>
                     </div>
                   ) : (
-                    <Button variant="outline" onClick={signInModal.onOpen}>
-                      {t('Common.login')}
-                    </Button>
+                    <div className="flex flex-col gap-2">
+                      <LocaleLink href="/register">
+                        <Button variant="outline" className="w-full">
+                          {t('Common.register')}
+                        </Button>
+                      </LocaleLink>
+                      <Button variant="default" onClick={signInModal.onOpen} className="w-full">
+                        {t('Common.login')}
+                      </Button>
+                    </div>
                   )}
                 </div>
               </SheetContent>

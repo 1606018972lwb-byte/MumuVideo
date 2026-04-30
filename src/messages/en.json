@@ -5,6 +5,7 @@
   },
   "Common": {
     "login": "Login",
+    "register": "Register",
     "signup": "Sign Up",
     "logout": "Logout",
     "language": "Language",

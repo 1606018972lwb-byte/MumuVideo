@@ -5,6 +5,7 @@
   },
   "Common": {
     "login": "登录",
+    "register": "注册",
     "signup": "注册",
     "logout": "退出",
     "language": "语言",
