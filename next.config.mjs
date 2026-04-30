@@ -21,7 +21,7 @@ const config = {
       { protocol: "https", hostname: "www.setupyourpay.com" },
     ],
   },
-  /** We already do linting and typechecking as separate tasks in CI */
+  /** CI 中已单独进行 lint 和类型检查，此处跳过构建时检查 */
   typescript: { ignoreBuildErrors: true },
   output: "standalone",
 };

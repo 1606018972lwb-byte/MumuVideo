@@ -1,4 +1,13 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git remote *)",
+      "Bash(git push *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" -x http://127.0.0.1:7890 \"https://api.github.com/repos/WenMumu/MumuVideo\")"
+    ]
+  },
   "project": {
     "name": "VideoFly",
     "description": "AI Video Generation Platform",
@@ -37,10 +46,5 @@
   "testing": {
     "framework": "vitest",
     "e2e": "playwright"
-  },
-  "permissions": {
-    "allow": [
-      "Bash(git add *)"
-    ]
   }
 }
