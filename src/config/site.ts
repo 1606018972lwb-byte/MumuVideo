@@ -29,9 +29,9 @@ export const siteConfig: SiteConfig = {
   ogImage: "/og.png",
   links: {},
   auth: {
-    enableGoogleLogin: true,
+    enableGoogleLogin: false,
     enableMagicLinkLogin: true,
-    defaultProvider: "google",
+    defaultProvider: "email",
   },
   routes: {
     defaultLoginRedirect: "/text-to-video",

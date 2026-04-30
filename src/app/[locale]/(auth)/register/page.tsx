@@ -46,7 +46,7 @@ export default async function RegisterPage({
             </p>
           </div>
           <Suspense fallback={<div className="h-10" />}>
-            <UserAuthForm lang={locale} disabled={true} />
+            <UserAuthForm lang={locale} defaultMode="password-register" />
           </Suspense>
           <p className="px-8 text-center text-sm text-muted-foreground">
             {t("agree_prefix")}{" "}

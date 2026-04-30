@@ -18,6 +18,7 @@ import { toast } from "sonner";
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
   lang: string;
   disabled?: boolean;
+  defaultMode?: "email" | "password-login" | "password-register";
 }
 
 // 邮箱登录 schema
@@ -50,10 +51,11 @@ export function UserAuthForm({
   className,
   lang,
   disabled,
+  defaultMode = "password-login",
   ...props
 }: UserAuthFormProps) {
   const t = useTranslations("Login");
-  const [authMode, setAuthMode] = React.useState<"email" | "password-login" | "password-register">("email");
+  const [authMode, setAuthMode] = React.useState<"email" | "password-login" | "password-register">(defaultMode);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [isGoogleLoading, setIsGoogleLoading] = React.useState<boolean>(false);
   const searchParams = useSearchParams();
