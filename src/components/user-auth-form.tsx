@@ -9,7 +9,7 @@ import { useTranslations } from "next-intl";
 
 import { authClient } from "@/lib/auth/client";
 import { cn } from "@/components/ui";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import * as Icons from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,11 +20,31 @@ interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
   disabled?: boolean;
 }
 
-const userAuthSchema = z.object({
+// 邮箱登录 schema
+const emailSchema = z.object({
   email: z.string().email(),
 });
 
-type FormData = z.infer<typeof userAuthSchema>;
+// 账号密码登录 schema
+const passwordLoginSchema = z.object({
+  email: z.string().email("Please enter a valid email"),
+  password: z.string().min(1, "Password is required"),
+});
+
+// 账号密码注册 schema
+const passwordRegisterSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Please enter a valid email"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
+
+type EmailFormData = z.infer<typeof emailSchema>;
+type PasswordLoginData = z.infer<typeof passwordLoginSchema>;
+type PasswordRegisterData = z.infer<typeof passwordRegisterSchema>;
 
 export function UserAuthForm({
   className,
@@ -33,18 +53,25 @@ export function UserAuthForm({
   ...props
 }: UserAuthFormProps) {
   const t = useTranslations("Login");
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(userAuthSchema),
-  });
+  const [authMode, setAuthMode] = React.useState<"email" | "password-login" | "password-register">("email");
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [isGoogleLoading, setIsGoogleLoading] = React.useState<boolean>(false);
   const searchParams = useSearchParams();
 
-  async function onSubmit(data: FormData) {
+  const emailForm = useForm<EmailFormData>({
+    resolver: zodResolver(emailSchema),
+  });
+
+  const passwordLoginForm = useForm<PasswordLoginData>({
+    resolver: zodResolver(passwordLoginSchema),
+  });
+
+  const passwordRegisterForm = useForm<PasswordRegisterData>({
+    resolver: zodResolver(passwordRegisterSchema),
+  });
+
+  // Magic Link 登录
+  async function onEmailSubmit(data: EmailFormData) {
     setIsLoading(true);
 
     try {
@@ -66,76 +93,284 @@ export function UserAuthForm({
     }
   }
 
+  // 账号密码登录
+  async function onPasswordLoginSubmit(data: PasswordLoginData) {
+    setIsLoading(true);
+
+    try {
+      // @ts-expect-error - better-auth includes emailPassword by default
+      const result = await authClient.signIn.emailPassword({
+        email: data.email.toLowerCase(),
+        password: data.password,
+      });
+
+      if (result.error) {
+        toast.error("Login failed", {
+          description: result.error.message || "Invalid email or password",
+        });
+      } else {
+        window.location.href = searchParams?.get("from") ?? `/${lang}/my-creations`;
+      }
+    } catch (error) {
+      console.error("Error during password sign in:", error);
+      toast.error("Something went wrong.", {
+        description: "Your sign in request failed. Please try again.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  // 账号密码注册
+  async function onPasswordRegisterSubmit(data: PasswordRegisterData) {
+    setIsLoading(true);
+
+    try {
+      // @ts-expect-error - better-auth includes emailPassword by default
+      const result = await authClient.signUp.emailPassword({
+        email: data.email.toLowerCase(),
+        password: data.password,
+        name: data.name,
+      });
+
+      if (result.error) {
+        toast.error("Registration failed", {
+          description: result.error.message || "Could not create account",
+        });
+      } else {
+        toast.success("Account created", {
+          description: "Welcome! You can now sign in with your password.",
+        });
+        setAuthMode("password-login");
+        passwordLoginForm.setValue("email", data.email);
+      }
+    } catch (error) {
+      console.error("Error during password sign up:", error);
+      toast.error("Something went wrong.", {
+        description: "Your registration request failed. Please try again.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
     <div className={cn("grid gap-6", className)} {...props}>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="grid gap-2">
-          <div className="grid gap-1">
-            <Label className="sr-only" htmlFor="email">
-              Email
-            </Label>
-            <Input
-              id="email"
-              placeholder="name@example.com"
-              type="email"
-              autoCapitalize="none"
-              autoComplete="email"
-              autoCorrect="off"
-              disabled={isLoading || isGoogleLoading || disabled}
-              {...register("email")}
-            />
-            {errors?.email && (
-              <p className="px-1 text-xs text-red-600">
-                {errors.email.message}
-              </p>
+      {/* 账号密码登录/注册表单 */}
+      {authMode !== "email" && (
+        <form
+          onSubmit={authMode === "password-login"
+            ? passwordLoginForm.handleSubmit(onPasswordLoginSubmit)
+            : passwordRegisterForm.handleSubmit(onPasswordRegisterSubmit)
+          }
+        >
+          <div className="grid gap-2">
+            {authMode === "password-register" && (
+              <div className="grid gap-1">
+                <Label htmlFor="name">Name</Label>
+                <Input
+                  id="name"
+                  placeholder="Your name"
+                  autoCapitalize="none"
+                  autoComplete="name"
+                  disabled={isLoading}
+                  {...passwordRegisterForm.register("name")}
+                />
+                {passwordRegisterForm.formState.errors.name && (
+                  <p className="px-1 text-xs text-red-600">
+                    {passwordRegisterForm.formState.errors.name.message}
+                  </p>
+                )}
+              </div>
             )}
+            <div className="grid gap-1">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="name@example.com"
+                autoCapitalize="none"
+                autoComplete="email"
+                disabled={isLoading}
+                {...(authMode === "password-login"
+                  ? passwordLoginForm.register("email")
+                  : passwordRegisterForm.register("email"))
+                }
+              />
+              {(authMode === "password-login"
+                ? passwordLoginForm.formState.errors.email
+                : passwordRegisterForm.formState.errors.email) && (
+                <p className="px-1 text-xs text-red-600">
+                  {(authMode === "password-login"
+                    ? passwordLoginForm.formState.errors.email
+                    : passwordRegisterForm.formState.errors.email)?.message}
+                </p>
+              )}
+            </div>
+            <div className="grid gap-1">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Your password"
+                autoCapitalize="none"
+                autoComplete={authMode === "password-login" ? "current-password" : "new-password"}
+                disabled={isLoading}
+                {...(authMode === "password-login"
+                  ? passwordLoginForm.register("password")
+                  : passwordRegisterForm.register("password"))
+                }
+              />
+              {(authMode === "password-login"
+                ? passwordLoginForm.formState.errors.password
+                : passwordRegisterForm.formState.errors.password) && (
+                <p className="px-1 text-xs text-red-600">
+                  {(authMode === "password-login"
+                    ? passwordLoginForm.formState.errors.password
+                    : passwordRegisterForm.formState.errors.password)?.message}
+                </p>
+              )}
+            </div>
+            {authMode === "password-register" && (
+              <div className="grid gap-1">
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  placeholder="Confirm your password"
+                  autoCapitalize="none"
+                  autoComplete="new-password"
+                  disabled={isLoading}
+                  {...passwordRegisterForm.register("confirmPassword")}
+                />
+                {passwordRegisterForm.formState.errors.confirmPassword && (
+                  <p className="px-1 text-xs text-red-600">
+                    {passwordRegisterForm.formState.errors.confirmPassword.message}
+                  </p>
+                )}
+              </div>
+            )}
+            <button
+              type="submit"
+              className={cn(buttonVariants())}
+              disabled={isLoading}
+            >
+              {isLoading && (
+                <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              {authMode === "password-login" ? "Sign In" : "Create Account"}
+            </button>
           </div>
+        </form>
+      )}
+
+      {/* Magic Link 登录表单 */}
+      {authMode === "email" && (
+        <form onSubmit={emailForm.handleSubmit(onEmailSubmit)}>
+          <div className="grid gap-2">
+            <div className="grid gap-1">
+              <Label className="sr-only" htmlFor="email">
+                Email
+              </Label>
+              <Input
+                id="email"
+                placeholder="name@example.com"
+                type="email"
+                autoCapitalize="none"
+                autoComplete="email"
+                autoCorrect="off"
+                disabled={isLoading || isGoogleLoading || disabled}
+                {...emailForm.register("email")}
+              />
+              {emailForm.formState.errors?.email && (
+                <p className="px-1 text-xs text-red-600">
+                  {emailForm.formState.errors.email.message}
+                </p>
+              )}
+            </div>
+            <button
+              type="submit"
+              className={cn(buttonVariants())}
+              disabled={isLoading}
+            >
+              {isLoading && (
+                <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              {t("signin_email")}
+            </button>
+          </div>
+        </form>
+      )}
+
+      {/* 切换登录方式 */}
+      {authMode !== "email" && (
+        <Button
+          type="button"
+          variant="link"
+          className="text-xs text-muted-foreground h-auto p-0"
+          onClick={() => {
+            if (authMode === "password-login") {
+              setAuthMode("password-register");
+            } else {
+              setAuthMode("password-login");
+            }
+          }}
+        >
+          {authMode === "password-login"
+            ? "Don't have an account? Sign up"
+            : "Already have an account? Sign in"}
+        </Button>
+      )}
+
+      {authMode === "email" && (
+        <>
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                {t("signin_others")}
+              </span>
+            </div>
+          </div>
+
+          {/* 账号密码登录选项 */}
           <button
-            type="submit"
-            className={cn(buttonVariants())}
+            type="button"
+            className={cn(buttonVariants({ variant: "outline" }))}
+            onClick={() => setAuthMode("password-login")}
             disabled={isLoading}
           >
-            {isLoading && (
-              <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />
-            )}
-            {t("signin_email")}
+            Sign in with Email & Password
           </button>
-        </div>
-      </form>
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            {t("signin_others")}
-          </span>
-        </div>
-      </div>
-      <button
-        type="button"
-        className={cn(buttonVariants({ variant: "outline" }))}
-        onClick={() => {
-          setIsGoogleLoading(true);
-          authClient.signIn
-            .social({
-              provider: "google",
-              callbackURL: searchParams?.get("from") ?? `/${lang}/my-creations`,
-            })
-            .catch((error) => {
-              console.error("Google signIn error:", error);
-              setIsGoogleLoading(false);
-            });
-        }}
-        disabled={isLoading || isGoogleLoading}
-      >
-        {isGoogleLoading ? (
-          <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />
-        ) : (
-          <Icons.Google className="mr-2 h-4 w-4" />
-        )}{" "}
-        Continue with Google
-      </button>
+
+          <button
+            type="button"
+            className={cn(buttonVariants({ variant: "outline" }))}
+            onClick={() => {
+              setIsGoogleLoading(true);
+              authClient.signIn
+                .social({
+                  provider: "google",
+                  callbackURL: searchParams?.get("from") ?? `/${lang}/my-creations`,
+                })
+                .catch((error) => {
+                  console.error("Google signIn error:", error);
+                  setIsGoogleLoading(false);
+                });
+            }}
+            disabled={isLoading || isGoogleLoading}
+          >
+            {isGoogleLoading ? (
+              <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Icons.Google className="mr-2 h-4 w-4" />
+            )}{" "}
+            Continue with Google
+          </button>
+        </>
+      )}
     </div>
   );
 }

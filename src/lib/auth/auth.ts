@@ -282,6 +282,12 @@ export const auth = betterAuth({
   // Plugins
   plugins,
 
+  // Email & Password 登录
+  emailAndPassword: {
+    enabled: true,
+    requireEmailVerification: false, // 设为 false 以直接启用密码登录
+  },
+
   // Hooks - 自动赠送新用户积分（仅在注册时触发）
   hooks: {
     after: createAuthMiddleware(async (ctx) => {
