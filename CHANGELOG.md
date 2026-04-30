@@ -1,33 +1,34 @@
 # 更新日志
 
-## 2026-04-30 (已上传)
+## 2026-05-01 (已上传)
 
 ### 本次更新内容
 
-1. **注册功能修复**
-   - 使用直接 fetch 调用 API，修复空响应处理
-   - 修复 Better Auth 端点路径
+1. **修复邮箱密码登录**
+   - 使用直接 fetch 调用 `/api/auth/sign-in/email` API
+   - 登录和注册功能正常工作
 
-2. **密码显示/隐藏**
-   - 新增 `PasswordInput` 组件
-   - 在 `icons.tsx` 中添加 Eye/EyeOff 图标
-   - 登录/注册表单中支持切换密码显示
+2. **Google 登录已启用**（默认显示）
 
-3. **数据库连接优化**
-   - 添加 `DATABASE_SSL_MODE` 环境变量支持
-   - 修复 ECONNRESET 连接问题
-   - 配置：`DATABASE_SSL_MODE=disable`
+3. **双语界面测试通过**
+   - Login / 登录页面
+   - Register / 注册页面
+   - Dashboard / 仪表板
+   - Pricing / 定价
+   - Credits / 积分
+   - My Creations / 我的作品
 
-4. **添加 CHANGELOG.md**
+### GitHub 提交记录
 
-### 验证
+```
+fix: 修复登录错误，还原使用直接 fetch 调用
 
-- `/login` 页面：中英文切换正常
-- `/pricing` 页面：中英文切换正常
-- `/dashboard` 页面：中英文切换正常
+- 移除不存在的 emailPasswordClient 插件
+- 恢复使用 /api/auth/sign-in/email API 调用
+```
 
-### 使用方法
+### 验证结果
 
-1. 确保 `.env.local` 中已设置 `DATABASE_SSL_MODE=disable`
-2. 运行 `pnpm db:pull` 同步数据库表结构
-3. 重启开发服务器 `pnpm dev`
+- ✅ 登录 API: 返回 token
+- ✅ 注册 API: 返回 token
+- ✅ 中英文界面切换正常
