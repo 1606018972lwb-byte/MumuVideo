@@ -1,6 +1,6 @@
 // AI Video Provider Types
 
-export type ProviderType = "evolink" | "kie" | "apimart";
+export type ProviderType = "evolink" | "kie" | "apimart" | "yunwu";
 
 // Unified video generation parameters
 export interface VideoGenerationParams {

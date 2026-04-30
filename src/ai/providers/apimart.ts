@@ -37,7 +37,7 @@ export class ApimartProvider implements AIVideoProvider {
   }
 
   async createTask(params: VideoGenerationParams): Promise<VideoTaskResponse> {
-    const internalModelId = params.model || "seedance-1.5-pro";
+    const internalModelId = params.model || "veo3.1-fast-components";
     const providerModelId = getProviderModelId(
       internalModelId,
       "apimart",

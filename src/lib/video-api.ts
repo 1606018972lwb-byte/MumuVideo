@@ -87,7 +87,7 @@ export async function transformSubmitData(
     quality = resolutionToQuality(data.resolution);
   }
 
-  const model = data.model || "sora-2";
+  const model = data.model || "veo3.1-fast-components";
 
   return {
     prompt: data.prompt,

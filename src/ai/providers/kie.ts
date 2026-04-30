@@ -20,7 +20,7 @@ export class KieProvider implements AIVideoProvider {
   }
 
   async createTask(params: VideoGenerationParams): Promise<VideoTaskResponse> {
-    const internalModelId = params.model || "sora-2";
+    const internalModelId = params.model || "veo3.1-fast-components";
     const providerConfig = getProviderConfig(internalModelId, "kie");
     if (!providerConfig?.supported) {
       throw new Error(`Model ${internalModelId} is not supported by KIE`);

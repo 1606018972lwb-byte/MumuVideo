@@ -52,3 +52,9 @@ package-lock.json
 
 .env
 .contentlayer/
+
+# Temporary docs
+tmp/
+
+
+
