@@ -204,10 +204,10 @@ export function UserAuthForm({
           <div className="grid gap-2">
             {authMode === "password-register" && (
               <div className="grid gap-1">
-                <Label htmlFor="name">{t("label_name")}</Label>
+                <Label htmlFor="name">Name</Label>
                 <Input
                   id="name"
-                  placeholder={t("label_name")}
+                  placeholder="Your name"
                   autoCapitalize="none"
                   autoComplete="name"
                   disabled={isLoading}
@@ -221,7 +221,7 @@ export function UserAuthForm({
               </div>
             )}
             <div className="grid gap-1">
-              <Label htmlFor="email">{t("label_email")}</Label>
+              <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -245,10 +245,10 @@ export function UserAuthForm({
               )}
             </div>
             <div className="grid gap-1">
-              <Label htmlFor="password">{t("label_password")}</Label>
+              <Label htmlFor="password">Password</Label>
               <PasswordInput
                 id="password"
-                placeholder={t("label_password")}
+                placeholder="Your password"
                 autoCapitalize="none"
                 autoComplete={authMode === "password-login" ? "current-password" : "new-password"}
                 disabled={isLoading}
@@ -269,10 +269,10 @@ export function UserAuthForm({
             </div>
             {authMode === "password-register" && (
               <div className="grid gap-1">
-                <Label htmlFor="confirmPassword">{t("label_confirm_password")}</Label>
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
                 <PasswordInput
                   id="confirmPassword"
-                  placeholder={t("label_confirm_password")}
+                  placeholder="Confirm your password"
                   autoCapitalize="none"
                   autoComplete="new-password"
                   disabled={isLoading}
