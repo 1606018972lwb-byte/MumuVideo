@@ -362,7 +362,11 @@
     "agree_prefix": "By clicking continue, you agree to our",
     "terms_of_service": "Terms of Service",
     "and": "and",
-    "privacy_policy": "Privacy Policy"
+    "privacy_policy": "Privacy Policy",
+    "label_name": "Name",
+    "label_email": "Email",
+    "label_password": "Password",
+    "label_confirm_password": "Confirm Password"
   },
   "SignInModal": {
     "signin_title": "Sign in to your account",
