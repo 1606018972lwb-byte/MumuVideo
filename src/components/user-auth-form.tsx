@@ -101,32 +101,14 @@ export function UserAuthForm({
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/auth/sign-in/email`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: data.email.toLowerCase(),
-          password: data.password,
-        }),
+      const result = await authClient.signIn.emailPassword({
+        email: data.email.toLowerCase(),
+        password: data.password,
       });
 
-      let result = {};
-      try {
-        result = await response.json();
-      } catch {
-        // Empty or invalid JSON response
-        if (!response.ok) {
-          toast.error("Login failed", {
-            description: "Database connection error. Please try again later.",
-          });
-          setIsLoading(false);
-          return;
-        }
-      }
-
-      if (!response.ok || result.error) {
+      if (result.error) {
         toast.error("Login failed", {
-          description: result.error?.message || "Invalid email or password",
+          description: result.error.message || "Invalid email or password",
         });
       } else {
         window.location.href = searchParams?.get("from") ?? `/${lang}/my-creations`;
@@ -146,33 +128,15 @@ export function UserAuthForm({
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/auth/sign-up/email`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: data.name,
-          email: data.email.toLowerCase(),
-          password: data.password,
-        }),
+      const result = await authClient.signUp.emailPassword({
+        name: data.name,
+        email: data.email.toLowerCase(),
+        password: data.password,
       });
 
-      let result = {};
-      try {
-        result = await response.json();
-      } catch {
-        // Empty or invalid JSON response
-        if (!response.ok) {
-          toast.error("Registration failed", {
-            description: "Database connection error. Please try again later.",
-          });
-          setIsLoading(false);
-          return;
-        }
-      }
-
-      if (!response.ok || result.error) {
+      if (result.error) {
         toast.error("Registration failed", {
-          description: result.error?.message || "Could not create account",
+          description: result.error.message || "Could not create account",
         });
       } else {
         toast.success("Account created", {

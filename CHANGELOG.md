@@ -1,25 +1,24 @@
 # 更新日志
 
-## 2026-04-30
+## 2026-04-30 (已上传)
 
-### 修复
+### 本次更新内容
 
 1. **注册功能修复**
-   - 修复了注册失败的问题
-   - 现在可以通过邮箱和密码注册新账户
+   - 使用直接 fetch 调用 API，修复空响应处理
+   - 修复 Better Auth 端点路径
 
-2. **密码显示/隐藏功能**
-   - 在密码输入框中添加了小眼睛图标
-   - 点击可以显示或隐藏密码
+2. **密码显示/隐藏**
+   - 新增 `PasswordInput` 组件
+   - 在 `icons.tsx` 中添加 Eye/EyeOff 图标
+   - 登录/注册表单中支持切换密码显示
 
-3. **数据库连接修复**
-   - 修复了数据库连接问题（ECONNRESET）
-   - 需要设置 `DATABASE_SSL_MODE=disable` 环境变量
-   - 配置示例：
-     ```
-     DATABASE_URL='postgresql://admin:password@host:port/database'
-     DATABASE_SSL_MODE=disable
-     ```
+3. **数据库连接优化**
+   - 添加 `DATABASE_SSL_MODE` 环境变量支持
+   - 修复 ECONNRESET 连接问题
+   - 配置：`DATABASE_SSL_MODE=disable`
+
+4. **添加 CHANGELOG.md**
 
 ### 验证
 
