@@ -171,8 +171,19 @@ export function UserAuthForm({
       }
 
       if (!response.ok || result.error) {
+        const errorCode = result.error?.code;
+        let errorMessage = "Could not create account";
+
+        if (errorCode === "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL") {
+          errorMessage = lang === "zh"
+            ? "该邮箱已被注册，请使用其他邮箱或直接登录"
+            : "This email is already registered. Please use another email or sign in.";
+        } else if (result.error?.message) {
+          errorMessage = result.error.message;
+        }
+
         toast.error("Registration failed", {
-          description: result.error?.message || "Could not create account",
+          description: errorMessage,
         });
       } else {
         toast.success("Account created", {
