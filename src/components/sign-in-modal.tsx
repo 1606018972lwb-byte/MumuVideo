@@ -207,7 +207,7 @@ export const SignInModalContent = ({ lang }: SignInModalContentProps) => {
                   className="flex-1"
                   onClick={() => setPasswordMode("password")}
                 >
-                  <Icons.Lock className="mr-2 h-4 w-4" />
+                  <Icons.Key className="mr-2 h-4 w-4" />
                   {lang === "zh" ? "密码" : "Password"}
                 </Button>
               </div>
@@ -276,7 +276,7 @@ export const SignInModalContent = ({ lang }: SignInModalContentProps) => {
                 {signInClicked === "email" || isProcessing ? (
                   <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />
                 ) : passwordMode === "password" ? (
-                  <Icons.Lock className="mr-2 h-4 w-4" />
+                  <Icons.Key className="mr-2 h-4 w-4" />
                 ) : (
                   <Icons.Mail className="mr-2 h-4 w-4" />
                 )}
