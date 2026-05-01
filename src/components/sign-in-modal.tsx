@@ -30,7 +30,7 @@ export const SignInModalContent = ({ lang }: SignInModalContentProps) => {
   const [passwordMode, setPasswordMode] = useState<"magic" | "password">("magic");
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const callbackURL = searchParams?.get("from") ?? `/${lang}${siteConfig.routes.defaultLoginRedirect}`;
 
@@ -97,7 +97,7 @@ export const SignInModalContent = ({ lang }: SignInModalContentProps) => {
       return;
     }
 
-    setIsLoading(true);
+    setIsProcessing(true);
     setEmailError("");
     setPasswordError("");
 
@@ -119,7 +119,7 @@ export const SignInModalContent = ({ lang }: SignInModalContentProps) => {
           toast.error("Login failed", {
             description: "Database connection error. Please try again later.",
           });
-          setIsLoading(false);
+          setIsProcessing(false);
           return;
         }
       }
@@ -138,11 +138,9 @@ export const SignInModalContent = ({ lang }: SignInModalContentProps) => {
         description: "Your sign in request failed. Please try again.",
       });
     } finally {
-      setIsLoading(false);
+      setIsProcessing(false);
     }
   };
-
-  const isLoading = signInClicked !== null || isLoading;
 
   return (
     <div className="w-full">
@@ -163,7 +161,7 @@ export const SignInModalContent = ({ lang }: SignInModalContentProps) => {
           <Button
             variant="default"
             className="w-full"
-            disabled={isLoading}
+            disabled={isProcessing}
             onClick={() => handleSocialLogin("google")}
           >
             {signInClicked === "google" ? (
@@ -231,7 +229,7 @@ export const SignInModalContent = ({ lang }: SignInModalContentProps) => {
                   autoCapitalize="none"
                   autoComplete="email"
                   autoCorrect="off"
-                  disabled={isLoading}
+                  disabled={isProcessing}
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);
@@ -255,7 +253,7 @@ export const SignInModalContent = ({ lang }: SignInModalContentProps) => {
                     placeholder={lang === "zh" ? "输入密码" : "Your password"}
                     autoCapitalize="none"
                     autoComplete="current-password"
-                    disabled={isLoading}
+                    disabled={isProcessing}
                     value={password}
                     onChange={(e) => {
                       setPassword(e.target.value);
@@ -273,9 +271,9 @@ export const SignInModalContent = ({ lang }: SignInModalContentProps) => {
                 type="submit"
                 variant={siteConfig.auth.enableGoogleLogin ? "outline" : "default"}
                 className="w-full"
-                disabled={isLoading}
+                disabled={isProcessing}
               >
-                {signInClicked === "email" || isLoading ? (
+                {signInClicked === "email" || isProcessing ? (
                   <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />
                 ) : passwordMode === "password" ? (
                   <Icons.Lock className="mr-2 h-4 w-4" />
