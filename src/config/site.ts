@@ -15,6 +15,7 @@ export interface SiteConfig {
   auth: {
     enableGoogleLogin: boolean;
     enableMagicLinkLogin: boolean;
+    enablePasswordLogin: boolean;
     defaultProvider: "google" | "email";
   };
   routes: {
@@ -29,8 +30,9 @@ export const siteConfig: SiteConfig = {
   ogImage: "/og.png",
   links: {},
   auth: {
-    enableGoogleLogin: false,
+    enableGoogleLogin: true,
     enableMagicLinkLogin: true,
+    enablePasswordLogin: true,
     defaultProvider: "email",
   },
   routes: {
@@ -43,5 +45,6 @@ export function getEnabledAuthProviders() {
   const providers: string[] = [];
   if (siteConfig.auth.enableGoogleLogin) providers.push("google");
   if (siteConfig.auth.enableMagicLinkLogin) providers.push("email");
+  if (siteConfig.auth.enablePasswordLogin) providers.push("password");
   return providers;
 }
