@@ -52,6 +52,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 export function LandingHeader({ user }: { user?: User | null }) {
+  const signInModal = useSigninModal();
   const t = useTranslations();
   const locale = useLocale();
   const pathname = usePathname();
@@ -318,7 +319,7 @@ export function LandingHeader({ user }: { user?: User | null }) {
                     {t('Common.register')}
                   </Button>
                 </LocaleLink>
-                <Button variant="default" size="sm" onClick={() => router.push(`/${locale}/login`)}>
+                <Button variant="default" size="sm" onClick={signInModal.onOpen}>
                   {t('Common.login')}
                 </Button>
               </div>
@@ -510,7 +511,7 @@ export function LandingHeader({ user }: { user?: User | null }) {
                           {t('Common.register')}
                         </Button>
                       </LocaleLink>
-                      <Button variant="default" onClick={() => router.push(`/${locale}/login`)} className="w-full">
+                      <Button variant="default" onClick={signInModal.onOpen} className="w-full">
                         {t('Common.login')}
                       </Button>
                     </div>

@@ -27,7 +27,7 @@ export const SignInModalContent = ({ lang }: SignInModalContentProps) => {
   const [signInClicked, setSignInClicked] = useState<string | null>(null);
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
-  const [passwordMode, setPasswordMode] = useState<"magic" | "password">("magic");
+  const [loginMethod, setLoginMethod] = useState<"magic" | "password">("magic");
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -142,6 +142,8 @@ export const SignInModalContent = ({ lang }: SignInModalContentProps) => {
     }
   };
 
+  const isLoading = signInClicked !== null || isProcessing;
+
   return (
     <div className="w-full">
       {/* Header */}
@@ -156,141 +158,133 @@ export const SignInModalContent = ({ lang }: SignInModalContentProps) => {
 
       {/* Body */}
       <div className="flex flex-col space-y-4 bg-secondary/50 px-4 py-8">
-        {/* Google Login - Priority */}
-        {siteConfig.auth.enableGoogleLogin && (
+        {/* Google Login */}
+        <Button
+          variant="default"
+          className="w-full"
+          disabled={isLoading}
+          onClick={() => handleSocialLogin("google")}
+        >
+          {signInClicked === "google" ? (
+            <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Icons.Google className="mr-2 h-4 w-4" />
+          )}
+          {t("continue_google")}
+        </Button>
+
+        {/* Divider */}
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-secondary/50 px-2 text-muted-foreground">
+              {t("or_continue_with")}
+            </span>
+          </div>
+        </div>
+
+        {/* Login Method Switcher */}
+        <div className="flex rounded-md bg-muted p-1">
           <Button
-            variant="default"
-            className="w-full"
-            disabled={isProcessing}
-            onClick={() => handleSocialLogin("google")}
+            variant={loginMethod === "magic" ? "default" : "ghost"}
+            size="sm"
+            className="flex-1"
+            onClick={() => setLoginMethod("magic")}
+            disabled={isLoading}
           >
-            {signInClicked === "google" ? (
-              <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Icons.Google className="mr-2 h-4 w-4" />
-            )}
-            {t("continue_google")}
+            <Icons.Mail className="mr-2 h-4 w-4" />
+            {lang === "zh" ? "邮箱" : "Email"}
           </Button>
-        )}
+          <Button
+            variant={loginMethod === "password" ? "default" : "ghost"}
+            size="sm"
+            className="flex-1"
+            onClick={() => setLoginMethod("password")}
+            disabled={isLoading}
+          >
+            <Icons.Key className="mr-2 h-4 w-4" />
+            {lang === "zh" ? "密码" : "Password"}
+          </Button>
+        </div>
 
-        {/* Login Options */}
-        {(siteConfig.auth.enableMagicLinkLogin || siteConfig.auth.enablePasswordLogin) && (
-          <>
-            {siteConfig.auth.enableGoogleLogin && (
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-secondary/50 px-2 text-muted-foreground">
-                    {t("or_continue_with")}
-                  </span>
-                </div>
-              </div>
+        {/* Email/Password Form */}
+        <form
+          onSubmit={loginMethod === "magic" ? handleMagicLinkLogin : handlePasswordLogin}
+          className="grid gap-2"
+        >
+          <div className="grid gap-1">
+            <Label className="sr-only" htmlFor="modal-email">
+              Email
+            </Label>
+            <Input
+              id="modal-email"
+              placeholder="name@example.com"
+              type="email"
+              autoCapitalize="none"
+              autoComplete="email"
+              autoCorrect="off"
+              disabled={isLoading}
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setEmailError("");
+              }}
+              className={cn(emailError && "border-red-500")}
+            />
+            {emailError && (
+              <p className="px-1 text-xs text-red-600">{emailError}</p>
             )}
+          </div>
 
-            {/* Switch between Email and Password */}
-            {siteConfig.auth.enableMagicLinkLogin && siteConfig.auth.enablePasswordLogin && (
-              <div className="flex rounded-md bg-muted p-1">
-                <Button
-                  variant={passwordMode === "magic" ? "default" : "ghost"}
-                  size="sm"
-                  className="flex-1"
-                  onClick={() => setPasswordMode("magic")}
-                >
-                  <Icons.Mail className="mr-2 h-4 w-4" />
-                  {lang === "zh" ? "邮箱" : "Email"}
-                </Button>
-                <Button
-                  variant={passwordMode === "password" ? "default" : "ghost"}
-                  size="sm"
-                  className="flex-1"
-                  onClick={() => setPasswordMode("password")}
-                >
-                  <Icons.Key className="mr-2 h-4 w-4" />
-                  {lang === "zh" ? "密码" : "Password"}
-                </Button>
-              </div>
-            )}
-
-            {/* Email/Password Form */}
-            <form
-              onSubmit={passwordMode === "magic" ? handleMagicLinkLogin : handlePasswordLogin}
-              className="grid gap-2"
-            >
-              <div className="grid gap-1">
-                <Label className="sr-only" htmlFor="modal-email">
-                  Email
-                </Label>
-                <Input
-                  id="modal-email"
-                  placeholder="name@example.com"
-                  type="email"
-                  autoCapitalize="none"
-                  autoComplete="email"
-                  autoCorrect="off"
-                  disabled={isProcessing}
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    setEmailError("");
-                  }}
-                  className={cn(emailError && "border-red-500")}
-                />
-                {emailError && (
-                  <p className="px-1 text-xs text-red-600">{emailError}</p>
-                )}
-              </div>
-
-              {/* Password field - only show in password mode */}
-              {passwordMode === "password" && (
-                <div className="grid gap-1">
-                  <Label className="sr-only" htmlFor="modal-password">
-                    Password
-                  </Label>
-                  <PasswordInput
-                    id="modal-password"
-                    placeholder={lang === "zh" ? "输入密码" : "Your password"}
-                    autoCapitalize="none"
-                    autoComplete="current-password"
-                    disabled={isProcessing}
-                    value={password}
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                      setPasswordError("");
-                    }}
-                    className={cn(passwordError && "border-red-500")}
-                  />
-                  {passwordError && (
-                    <p className="px-1 text-xs text-red-600">{passwordError}</p>
-                  )}
-                </div>
+          {/* Password field - only show in password mode */}
+          {loginMethod === "password" && (
+            <div className="grid gap-1">
+              <Label className="sr-only" htmlFor="modal-password">
+                Password
+              </Label>
+              <PasswordInput
+                id="modal-password"
+                placeholder={lang === "zh" ? "输入密码" : "Your password"}
+                autoCapitalize="none"
+                autoComplete="current-password"
+                disabled={isLoading}
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setPasswordError("");
+                }}
+                className={cn(passwordError && "border-red-500")}
+              />
+              {passwordError && (
+                <p className="px-1 text-xs text-red-600">{passwordError}</p>
               )}
+            </div>
+          )}
 
-              <Button
-                type="submit"
-                variant={siteConfig.auth.enableGoogleLogin ? "outline" : "default"}
-                className="w-full"
-                disabled={isProcessing}
-              >
-                {signInClicked === "email" || isProcessing ? (
-                  <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />
-                ) : passwordMode === "password" ? (
-                  <Icons.Key className="mr-2 h-4 w-4" />
-                ) : (
-                  <Icons.Mail className="mr-2 h-4 w-4" />
-                )}
-                {passwordMode === "password"
-                  ? (lang === "zh" ? "密码登录" : "Sign In")
-                  : t("continue_email")
-                }
-              </Button>
-            </form>
-          </>
-        )}
+          <Button
+            type="submit"
+            variant="outline"
+            className="w-full"
+            disabled={isLoading}
+          >
+            {signInClicked === "email" || isLoading ? (
+              <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />
+            ) : loginMethod === "password" ? (
+              <Icons.Key className="mr-2 h-4 w-4" />
+            ) : (
+              <Icons.Mail className="mr-2 h-4 w-4" />
+            )}
+            {loginMethod === "password"
+              ? (lang === "zh" ? "密码登录" : "Sign In")
+              : t("continue_email")
+            }
+          </Button>
+        </form>
 
         {/* Register link for password login */}
-        {siteConfig.auth.enablePasswordLogin && passwordMode === "password" && (
+        {loginMethod === "password" && (
           <p className="text-center text-sm text-muted-foreground">
             {lang === "zh"
               ? "还没有账户？"
